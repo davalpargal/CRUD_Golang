@@ -15,14 +15,6 @@ const (
 	dbname = "golang"
 )
 
-func main () {
-	db, err := connectToDb()
-	if err != nil {
-		panic(err)
-	}
-	db.Close()
-}
-
 func connectToDb() (db *sql.DB, err error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
@@ -35,9 +27,6 @@ func connectToDb() (db *sql.DB, err error) {
 	}
 
 	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
 
 	fmt.Printf("postgres Connected")
 	return
