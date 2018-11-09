@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	_ "database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
 )
@@ -12,10 +11,9 @@ const (
 	port     = 5432
 	user     = "postgres"
 	password = "postgres"
-	dbname   = "golang"
 )
 
-func (a *App) connectToDb() {
+func (a *App) ConnectToDb(dbname string) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)

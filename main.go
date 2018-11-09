@@ -15,7 +15,7 @@ type App struct {
 func main () {
 	app := App{}
 
-	app.connectToDb()
+	app.ConnectToDb("golang")
 	defer app.DB.Close()
 
 	app.startServer()
