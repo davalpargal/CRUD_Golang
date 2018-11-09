@@ -12,16 +12,23 @@ type App struct {
 	Router *mux.Router
 }
 
-func main () {
-	app := App{}
+var app App
 
-	app.ConnectToDb("golang")
+func main () {
+	app = App{}
+
+	app.ConnectToDb("testgolang")
 	defer app.DB.Close()
 
-	app.startServer()
+	app.SetRouter()
+	app.StartServer()
 }
 
-func (a *App) startServer() {
+func (a *App) SetRouter() {
 	a.Router = mux.NewRouter()
+	a.Router.HandleFunc("/users", a.AllUsersHandler)
+}
+
+func (a *App) StartServer() {
 	log.Fatal(http.ListenAndServe(":8080", a.Router))
 }
