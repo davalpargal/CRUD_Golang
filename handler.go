@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -14,15 +13,17 @@ func (a *App) AllUsersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	payload, err := ioutil.ReadAll(r.Body)
+	payload := r.Body
 
-	if err != nil {
-		fmt.Println("Request Body could not be read")
+	var newUser User
+	decoder := json.NewDecoder(payload)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&newUser); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "Bad Request")
 		return
 	}
-	var newUser User
-
-	json.Unmarshal(payload, &newUser)
 
 	created := createUser(a.DB, newUser)
 

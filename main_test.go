@@ -53,5 +53,21 @@ func TestCreateUserWithEmptyPayload(t *testing.T) {
 	if string(responseBody) != "Empty Payload" {
 		t.Errorf("Expected Empty Payload Got %s", responseBody)
 	}
+}
 
+func TestCreateUserWithIncorrectPayload(t *testing.T) {
+	body := []byte(`{"foo":"bar"}`)
+	request, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(body))
+	response := httptest.NewRecorder()
+	a.Router.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Errorf("Expected Response code %d. Got %d\n", http.StatusBadRequest, response.Code)
+	}
+
+	responseBody, _ := ioutil.ReadAll(response.Body)
+
+	if string(responseBody) != "Bad Request" {
+		t.Errorf("Expected Bad Request Got %s", responseBody)
+	}
 }
