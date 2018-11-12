@@ -51,3 +51,12 @@ func createUser(db *sql.DB, newUser User) (created bool) {
 	}
 	return
 }
+
+func getUserWithUsername(db *sql.DB, username string) (user User) {
+	query := `SELECT * FROM USERS WHERE USERNAME = $1`
+
+	row := db.QueryRow(query, username)
+
+	row.Scan(&user.Username, &user.Email)
+	return
+}

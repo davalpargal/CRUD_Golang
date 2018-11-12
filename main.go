@@ -2,19 +2,20 @@ package main
 
 import (
 	"database/sql"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type App struct {
-	DB *sql.DB
+	DB     *sql.DB
 	Router *mux.Router
 }
 
 var app App
 
-func main () {
+func main() {
 	app = App{}
 
 	app.ConnectToDb("golang")
@@ -28,6 +29,7 @@ func (a *App) SetRouter() {
 	a.Router = mux.NewRouter()
 	a.Router.HandleFunc("/users", a.AllUsersHandler).Methods("GET")
 	a.Router.HandleFunc("/users", a.CreateUserHandler).Methods("POST")
+	a.Router.HandleFunc("/user/{username}", a.GetUserHandler).Methods("GET")
 }
 
 func (a *App) StartServer() {

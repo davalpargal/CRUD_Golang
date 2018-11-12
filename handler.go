@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func (a *App) AllUsersHandler(w http.ResponseWriter, r *http.Request) {
@@ -34,4 +36,12 @@ func (a *App) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprint(w, "User Created")
 	}
+}
+
+func (a *App) GetUserHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	username := params["username"]
+	user := getUserWithUsername(a.DB, username)
+	userJson, _ := json.Marshal(user)
+	fmt.Fprint(w, string(userJson))
 }
