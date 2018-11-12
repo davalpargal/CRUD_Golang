@@ -17,7 +17,7 @@ var app App
 func main () {
 	app = App{}
 
-	app.ConnectToDb("testgolang")
+	app.ConnectToDb("golang")
 	defer app.DB.Close()
 
 	app.SetRouter()
@@ -26,7 +26,8 @@ func main () {
 
 func (a *App) SetRouter() {
 	a.Router = mux.NewRouter()
-	a.Router.HandleFunc("/users", a.AllUsersHandler)
+	a.Router.HandleFunc("/users", a.AllUsersHandler).Methods("GET")
+	a.Router.HandleFunc("/users", a.CreateUserHandler).Methods("POST")
 }
 
 func (a *App) StartServer() {

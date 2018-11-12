@@ -31,3 +31,10 @@ func GetAllUsers(db *sql.DB) (users []User) {
 	defer rows.Close()
 	return
 }
+
+func createUser(db *sql.DB, newUser User) (created bool) {
+	if newUser.Username == "" && newUser.Email == "" {
+		return false
+	}
+	return true
+}
