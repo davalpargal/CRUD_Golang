@@ -125,3 +125,25 @@ func TestGetUserWithInvalidUsername(t *testing.T) {
 		t.Errorf("Expected {}, got %s", responseBody)
 	}
 }
+
+func TestDeleteUserWithValidUsername(t *testing.T) {
+	clearDb()
+
+	userJson := `{"username":"avd","email":"avd@gojek.com"}`
+	body := []byte(userJson)
+	request, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(body))
+	response := httptest.NewRecorder()
+	a.Router.ServeHTTP(response, request)
+
+	request, _ = http.NewRequest("DELETE", "/user/avd", nil)
+	response = httptest.NewRecorder()
+	a.Router.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Errorf("Expected Response code %d. Got %d\n", http.StatusOK, response.Code)
+	}
+
+	if responseBody := response.Body.String(); responseBody != "User Deleted" {
+		t.Errorf("Expected User Deleted, got %s", responseBody)
+	}
+}

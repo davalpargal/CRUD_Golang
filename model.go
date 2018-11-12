@@ -60,3 +60,18 @@ func getUserWithUsername(db *sql.DB, username string) (user User, err error) {
 	err = row.Scan(&user.Username, &user.Email)
 	return
 }
+
+func deleteUserWithUsername(db *sql.DB, username string) (deleted bool) {
+	query := `DELETE FROM USERS WHERE USERNAME = $1`
+
+	response, _ := db.Exec(query, username)
+
+	count, err := response.RowsAffected()
+	if err != nil {
+		panic(err)
+	}
+	if count == 1 {
+		deleted = true
+	}
+	return
+}

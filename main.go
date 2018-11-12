@@ -30,6 +30,7 @@ func (a *App) SetRouter() {
 	a.Router.HandleFunc("/users", a.AllUsersHandler).Methods("GET")
 	a.Router.HandleFunc("/users", a.CreateUserHandler).Methods("POST")
 	a.Router.HandleFunc("/user/{username}", a.GetUserHandler).Methods("GET")
+	a.Router.HandleFunc("/user/{username}", a.DeleteUserHandler).Methods("DELETE")
 }
 
 func (a *App) StartServer() {

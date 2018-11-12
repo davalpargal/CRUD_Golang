@@ -52,3 +52,13 @@ func (a *App) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	userJson, _ := json.Marshal(user)
 	fmt.Fprint(w, string(userJson))
 }
+
+func (a *App) DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	username := params["username"]
+	deleted := deleteUserWithUsername(a.DB, username)
+
+	if deleted {
+		fmt.Fprint(w, "User Deleted")
+	}
+}
