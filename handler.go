@@ -41,7 +41,14 @@ func (a *App) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 func (a *App) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	username := params["username"]
-	user := getUserWithUsername(a.DB, username)
+	user, err := getUserWithUsername(a.DB, username)
+
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, "{}")
+		return
+	}
+
 	userJson, _ := json.Marshal(user)
 	fmt.Fprint(w, string(userJson))
 }

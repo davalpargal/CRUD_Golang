@@ -109,3 +109,19 @@ func TestGetUserWithValidUsername(t *testing.T) {
 		t.Errorf("Expected %s, got %s", userJson, responseBody)
 	}
 }
+
+func TestGetUserWithInvalidUsername(t *testing.T) {
+	clearDb()
+
+	request, _ := http.NewRequest("GET", "/user/avdx", nil)
+	response := httptest.NewRecorder()
+	a.Router.ServeHTTP(response, request)
+
+	if response.Code != http.StatusNotFound {
+		t.Errorf("Expected Response code %d. Got %d\n", http.StatusNotFound, response.Code)
+	}
+
+	if responseBody := response.Body.String(); responseBody != "{}" {
+		t.Errorf("Expected {}, got %s", responseBody)
+	}
+}
