@@ -36,5 +36,18 @@ func createUser(db *sql.DB, newUser User) (created bool) {
 	if newUser.Username == "" && newUser.Email == "" {
 		return false
 	}
-	return true
+	query := `
+	INSERT INTO USERS(USERNAME, EMAIL) VALUES($1, $2)`
+	response, err := db.Exec(query, newUser.Username, newUser.Email)
+
+	if err != nil {
+		created = false
+	}
+
+	if rowsChanged, _ := response.RowsAffected(); rowsChanged == 1 {
+		created = true
+	} else {
+		created = false
+	}
+	return
 }

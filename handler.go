@@ -30,5 +30,8 @@ func (a *App) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	if !created {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, "Empty Payload")
+	} else {
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprint(w, "User Created")
 	}
 }

@@ -71,3 +71,20 @@ func TestCreateUserWithIncorrectPayload(t *testing.T) {
 		t.Errorf("Expected Bad Request Got %s", responseBody)
 	}
 }
+
+func TestCreateUserWithCorrectPayload(t *testing.T) {
+	body := []byte(`{"username":"avd", "email":"avd@gojek.com"}`)
+	request, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(body))
+	response := httptest.NewRecorder()
+	a.Router.ServeHTTP(response, request)
+
+	if response.Code != http.StatusCreated {
+		t.Errorf("Expected Response code %d. Got %d\n", http.StatusCreated, response.Code)
+	}
+
+	responseBody, _ := ioutil.ReadAll(response.Body)
+
+	if string(responseBody) != "User Created" {
+		t.Errorf("Expected User Created Got %s", responseBody)
+	}
+}
