@@ -147,3 +147,19 @@ func TestDeleteUserWithValidUsername(t *testing.T) {
 		t.Errorf("Expected User Deleted, got %s", responseBody)
 	}
 }
+
+func TestDeleteUserWithInvalidUsername(t *testing.T) {
+	clearDb()
+
+	request, _ := http.NewRequest("DELETE", "/user/avd", nil)
+	response := httptest.NewRecorder()
+	a.Router.ServeHTTP(response, request)
+
+	if response.Code != http.StatusNotFound {
+		t.Errorf("Expected Response code %d. Got %d\n", http.StatusNotFound, response.Code)
+	}
+
+	if responseBody := response.Body.String(); responseBody != "User Not Found" {
+		t.Errorf("Expected User Not Found, got %s", responseBody)
+	}
+}

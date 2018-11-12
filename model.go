@@ -72,6 +72,8 @@ func deleteUserWithUsername(db *sql.DB, username string) (deleted bool) {
 	}
 	if count == 1 {
 		deleted = true
+	} else {
+		deleted = false
 	}
 	return
 }

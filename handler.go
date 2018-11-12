@@ -60,5 +60,8 @@ func (a *App) DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	if deleted {
 		fmt.Fprint(w, "User Deleted")
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, "User Not Found")
 	}
 }
