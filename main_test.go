@@ -230,3 +230,21 @@ func TestUpdateUserForValidUsername(t *testing.T) {
 		t.Errorf("Expected %s, got %s", userFinalJson, responseBody)
 	}
 }
+
+func TestUpdateUserForInvalidUsername(t *testing.T) {
+	clearDb()
+	userUpdateJson := `{"email":"avdfinal@gojek.com"}`
+
+	body := []byte(userUpdateJson)
+	request, _ := http.NewRequest("PATCH", "/user/avd", bytes.NewBuffer(body))
+	response := httptest.NewRecorder()
+	a.Router.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Errorf("Expected Response code %d. Got %d\n", http.StatusBadRequest, response.Code)
+	}
+
+	if responseBody := response.Body.String(); responseBody != "No such user exists" {
+		t.Errorf("Expected no such user exists, got %s", responseBody)
+	}
+}

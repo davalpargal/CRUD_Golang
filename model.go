@@ -81,7 +81,12 @@ func updateEmailWithUsername(db *sql.DB, username string, email string) (updated
 	query := `UPDATE USERS
 SET EMAIL = $1
 WHERE USERNAME = $2`
-	db.Exec(query, email, username)
-	updated = true
+
+	response, _ := db.Exec(query, email, username)
+	if rowsChanged, _ := response.RowsAffected(); rowsChanged == 1 {
+		updated = true
+	} else if rowsChanged == 0 {
+		updated = false
+	}
 	return
 }

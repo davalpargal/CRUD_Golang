@@ -92,5 +92,8 @@ func (a *App) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		jsonResponse, _ := json.Marshal(updatedUser)
 		fmt.Fprintf(w, string(jsonResponse))
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "No such user exists")
 	}
 }
