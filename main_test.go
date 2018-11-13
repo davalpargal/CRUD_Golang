@@ -207,3 +207,26 @@ func TestDeleteUserWithInvalidUsername(t *testing.T) {
 		t.Errorf("Expected User Not Found, got %s", responseBody)
 	}
 }
+
+func TestUpdateUserForValidUsername(t *testing.T) {
+	clearDb()
+
+	userInitialJson := `{"username":"avd","email":"avdinitial@gojek.com"}`
+	userUpdateJson := `{"email":"avdfinal@gojek.com"}`
+	insertUser(userInitialJson)
+
+	body := []byte(userUpdateJson)
+	request, _ := http.NewRequest("PATCH", "/user/avd", bytes.NewBuffer(body))
+	response := httptest.NewRecorder()
+	a.Router.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Errorf("Expected Response code %d. Got %d\n", http.StatusOK, response.Code)
+	}
+
+	userFinalJson := `{"username":"avd","email":"avdfinal@gojek.com"}`
+
+	if responseBody := response.Body.String(); responseBody != userFinalJson {
+		t.Errorf("Expected %s, got %s", userFinalJson, responseBody)
+	}
+}

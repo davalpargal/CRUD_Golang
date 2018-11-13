@@ -74,3 +74,23 @@ func (a *App) DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "User Not Found")
 	}
 }
+
+func (a *App) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	username := params["username"]
+
+	payload := r.Body
+
+	var updatedUser User
+	decoder := json.NewDecoder(payload)
+	decoder.Decode(&updatedUser)
+
+	updated := updateEmailWithUsername(a.DB, username, updatedUser.Email)
+
+	if updated {
+		updatedUser.Username = username
+		w.WriteHeader(http.StatusOK)
+		jsonResponse, _ := json.Marshal(updatedUser)
+		fmt.Fprintf(w, string(jsonResponse))
+	}
+}

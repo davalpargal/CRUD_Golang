@@ -76,3 +76,12 @@ func deleteUserWithUsername(db *sql.DB, username string) (deleted bool) {
 	}
 	return
 }
+
+func updateEmailWithUsername(db *sql.DB, username string, email string) (updated bool) {
+	query := `UPDATE USERS
+SET EMAIL = $1
+WHERE USERNAME = $2`
+	db.Exec(query, email, username)
+	updated = true
+	return
+}
