@@ -89,6 +89,36 @@ func TestCreateUserWithCorrectPayload(t *testing.T) {
 	}
 }
 
+func TestGetAllUsersForNonEmptyDatabase(t *testing.T) {
+	clearDb()
+
+	userJson := `{"username":"avd","email":"avd@gojek.com"}`
+	body := []byte(userJson)
+	request, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(body))
+	response := httptest.NewRecorder()
+	a.Router.ServeHTTP(response, request)
+
+
+	userJson = `{"username":"dav","email":"dav@gojek.com"}`
+	body = []byte(userJson)
+	request, _ = http.NewRequest("POST", "/users", bytes.NewBuffer(body))
+	response = httptest.NewRecorder()
+	a.Router.ServeHTTP(response, request)
+
+	request, _ = http.NewRequest("GET", "/users", nil)
+	response = httptest.NewRecorder()
+	a.Router.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Errorf("Expected response code %d. Got %d\n", http.StatusOK, response.Code)
+	}
+
+	resultJson := `[{"username":"avd","email":"avd@gojek.com"},{"username":"dav","email":"dav@gojek.com"}]`
+	if body := response.Body.String(); body != resultJson {
+		t.Errorf("Expected empty result, got %s", body)
+	}
+}
+
 func TestGetUserWithValidUsername(t *testing.T) {
 	clearDb()
 	userJson := `{"username":"avd","email":"avd@gojek.com"}`
