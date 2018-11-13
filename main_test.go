@@ -23,7 +23,7 @@ func clearDb() {
 	_, _ = a.DB.Exec(clearAllQuery)
 }
 
-func TestGetAllUsers(t *testing.T) {
+func TestGetAllUsersForEmptyDatabase(t *testing.T) {
 	clearDb()
 	req, _ := http.NewRequest("GET", "/users", nil)
 	response := httptest.NewRecorder()
