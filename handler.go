@@ -85,6 +85,12 @@ func (a *App) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(payload)
 	decoder.Decode(&updatedUser)
 
+	if updatedUser.Email == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Empty Payload")
+		return
+	}
+
 	updated := updateEmailWithUsername(a.DB, username, updatedUser.Email)
 
 	if updated {

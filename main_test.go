@@ -248,3 +248,24 @@ func TestUpdateUserForInvalidUsername(t *testing.T) {
 		t.Errorf("Expected no such user exists, got %s", responseBody)
 	}
 }
+
+func TestUpdateUserForEmptyPayload(t *testing.T) {
+	clearDb()
+
+	userInitialJson := `{"username":"avd","email":"avdinitial@gojek.com"}`
+	userUpdateJson := `{}`
+	insertUser(userInitialJson)
+
+	body := []byte(userUpdateJson)
+	request, _ := http.NewRequest("PATCH", "/user/avd", bytes.NewBuffer(body))
+	response := httptest.NewRecorder()
+	a.Router.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Errorf("Expected Response code %d. Got %d\n", http.StatusBadRequest, response.Code)
+	}
+
+	if responseBody := response.Body.String(); responseBody != "Empty Payload" {
+		t.Errorf("Expected Empty Payload, got %s", responseBody)
+	}
+}
