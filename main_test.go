@@ -18,6 +18,14 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
+func insertUser(userJson string) (*httptest.ResponseRecorder, error) {
+	body := []byte(userJson)
+	request, err := http.NewRequest("POST", "/users", bytes.NewBuffer(body))
+	response := httptest.NewRecorder()
+	a.Router.ServeHTTP(response, request)
+	return response, err
+}
+
 func clearDb() {
 	clearAllQuery := `DELETE FROM USERS`
 	_, _ = a.DB.Exec(clearAllQuery)
@@ -25,6 +33,7 @@ func clearDb() {
 
 func TestGetAllUsersForEmptyDatabase(t *testing.T) {
 	clearDb()
+
 	req, _ := http.NewRequest("GET", "/users", nil)
 	response := httptest.NewRecorder()
 	a.Router.ServeHTTP(response, req)
@@ -39,10 +48,10 @@ func TestGetAllUsersForEmptyDatabase(t *testing.T) {
 }
 
 func TestCreateUserWithEmptyPayload(t *testing.T) {
-	body := []byte(`{}`)
-	request, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(body))
-	response := httptest.NewRecorder()
-	a.Router.ServeHTTP(response, request)
+	clearDb()
+
+	userJson := `{}`
+	response, _ := insertUser(userJson)
 
 	if response.Code != http.StatusBadRequest {
 		t.Errorf("Expected Response code %d. Got %d\n", http.StatusBadRequest, response.Code)
@@ -56,10 +65,10 @@ func TestCreateUserWithEmptyPayload(t *testing.T) {
 }
 
 func TestCreateUserWithIncorrectPayload(t *testing.T) {
-	body := []byte(`{"foo":"bar"}`)
-	request, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(body))
-	response := httptest.NewRecorder()
-	a.Router.ServeHTTP(response, request)
+	clearDb()
+
+	userJson := `{"foo":"bar"}`
+	response, _ := insertUser(userJson)
 
 	if response.Code != http.StatusBadRequest {
 		t.Errorf("Expected Response code %d. Got %d\n", http.StatusBadRequest, response.Code)
@@ -73,10 +82,10 @@ func TestCreateUserWithIncorrectPayload(t *testing.T) {
 }
 
 func TestCreateUserWithCorrectPayload(t *testing.T) {
-	body := []byte(`{"username":"avd", "email":"avd@gojek.com"}`)
-	request, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(body))
-	response := httptest.NewRecorder()
-	a.Router.ServeHTTP(response, request)
+	clearDb()
+
+	userJson := `{"username":"avd", "email":"avd@gojek.com"}`
+	response, _ := insertUser(userJson)
 
 	if response.Code != http.StatusCreated {
 		t.Errorf("Expected Response code %d. Got %d\n", http.StatusCreated, response.Code)
@@ -93,20 +102,13 @@ func TestGetAllUsersForNonEmptyDatabase(t *testing.T) {
 	clearDb()
 
 	userJson := `{"username":"avd","email":"avd@gojek.com"}`
-	body := []byte(userJson)
-	request, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(body))
-	response := httptest.NewRecorder()
-	a.Router.ServeHTTP(response, request)
-
+	insertUser(userJson)
 
 	userJson = `{"username":"dav","email":"dav@gojek.com"}`
-	body = []byte(userJson)
-	request, _ = http.NewRequest("POST", "/users", bytes.NewBuffer(body))
-	response = httptest.NewRecorder()
-	a.Router.ServeHTTP(response, request)
+	insertUser(userJson)
 
-	request, _ = http.NewRequest("GET", "/users", nil)
-	response = httptest.NewRecorder()
+	request, _ := http.NewRequest("GET", "/users", nil)
+	response := httptest.NewRecorder()
 	a.Router.ServeHTTP(response, request)
 
 	if response.Code != http.StatusOK {
@@ -122,13 +124,10 @@ func TestGetAllUsersForNonEmptyDatabase(t *testing.T) {
 func TestGetUserWithValidUsername(t *testing.T) {
 	clearDb()
 	userJson := `{"username":"avd","email":"avd@gojek.com"}`
-	body := []byte(userJson)
-	request, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(body))
-	response := httptest.NewRecorder()
-	a.Router.ServeHTTP(response, request)
+	insertUser(userJson)
 
-	request, _ = http.NewRequest("GET", "/user/avd", nil)
-	response = httptest.NewRecorder()
+	request, _ := http.NewRequest("GET", "/user/avd", nil)
+	response := httptest.NewRecorder()
 	a.Router.ServeHTTP(response, request)
 
 	if response.Code != http.StatusOK {
@@ -160,13 +159,10 @@ func TestDeleteUserWithValidUsername(t *testing.T) {
 	clearDb()
 
 	userJson := `{"username":"avd","email":"avd@gojek.com"}`
-	body := []byte(userJson)
-	request, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(body))
-	response := httptest.NewRecorder()
-	a.Router.ServeHTTP(response, request)
+	insertUser(userJson)
 
-	request, _ = http.NewRequest("DELETE", "/user/avd", nil)
-	response = httptest.NewRecorder()
+	request, _ := http.NewRequest("DELETE", "/user/avd", nil)
+	response := httptest.NewRecorder()
 	a.Router.ServeHTTP(response, request)
 
 	if response.Code != http.StatusOK {

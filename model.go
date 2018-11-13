@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 type User struct {
@@ -16,7 +15,6 @@ func GetAllUsers(db *sql.DB) (users []User) {
 	rows, err := db.Query(query)
 
 	if err != nil {
-		fmt.Println("query")
 		panic(err)
 	}
 
