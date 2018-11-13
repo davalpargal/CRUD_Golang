@@ -77,7 +77,7 @@ func deleteUserWithUsername(db *sql.DB, username string) (deleted bool) {
 	return
 }
 
-func updateEmailWithUsername(db *sql.DB, username string, email string) (updated bool) {
+func updateEmailWithUsername(db *sql.DB, username string, email interface{}) (updated bool) {
 	query := `UPDATE USERS
 SET EMAIL = $1
 WHERE USERNAME = $2`

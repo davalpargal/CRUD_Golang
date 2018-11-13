@@ -269,3 +269,24 @@ func TestUpdateUserForEmptyPayload(t *testing.T) {
 		t.Errorf("Expected Empty Payload, got %s", responseBody)
 	}
 }
+
+func TestUpdateUserForIncorrectPayload(t *testing.T) {
+	clearDb()
+
+	userInitialJson := `{"username":"avd","email":"avdinitial@gojek.com"}`
+	userUpdateJson := `{"foo":"bar"}`
+	insertUser(userInitialJson)
+
+	body := []byte(userUpdateJson)
+	request, _ := http.NewRequest("PATCH", "/user/avd", bytes.NewBuffer(body))
+	response := httptest.NewRecorder()
+	a.Router.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Errorf("Expected Response code %d. Got %d\n", http.StatusBadRequest, response.Code)
+	}
+
+	if responseBody := response.Body.String(); responseBody != "Incorrect Payload" {
+		t.Errorf("Expected Incorrect Payload, got %s", responseBody)
+	}
+}

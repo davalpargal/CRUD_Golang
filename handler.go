@@ -12,6 +12,11 @@ const (
 	duplicateDBEntry = `pq: duplicate key value violates unique constraint "users_username_key"`
 )
 
+type UpdatePayload struct {
+	Email string  `json:email`
+}
+
+
 func (a *App) AllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	users := GetAllUsers(a.DB)
 	jsonResponse, _ := json.Marshal(users)
@@ -79,22 +84,30 @@ func (a *App) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	username := params["username"]
 
+	var updateData UpdatePayload
+
 	payload := r.Body
-
-	var updatedUser User
 	decoder := json.NewDecoder(payload)
-	decoder.Decode(&updatedUser)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&updateData); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "Incorrect Payload")
+		return
+	}
 
-	if updatedUser.Email == "" {
+	if updateData.Email == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "Empty Payload")
 		return
 	}
 
-	updated := updateEmailWithUsername(a.DB, username, updatedUser.Email)
+	updated := updateEmailWithUsername(a.DB, username, updateData.Email)
 
 	if updated {
+		var updatedUser User
 		updatedUser.Username = username
+		updatedUser.Email = updateData.Email
+
 		w.WriteHeader(http.StatusOK)
 		jsonResponse, _ := json.Marshal(updatedUser)
 		fmt.Fprintf(w, string(jsonResponse))
