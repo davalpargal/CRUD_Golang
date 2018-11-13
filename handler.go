@@ -8,6 +8,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const (
+	duplicateDBEntry = `pq: duplicate key value violates unique constraint "users_username_key"`
+)
+
 func (a *App) AllUsersHandler(w http.ResponseWriter, r *http.Request) {
 	users := GetAllUsers(a.DB)
 	jsonResponse, _ := json.Marshal(users)
@@ -27,9 +31,14 @@ func (a *App) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	created := createUser(a.DB, newUser)
+	created, err := createUser(a.DB, newUser)
 
 	if !created {
+		if err != nil && err.Error() == duplicateDBEntry {
+			w.WriteHeader(http.StatusConflict)
+			fmt.Fprint(w, "Duplicate Username")
+			return
+		}
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, "Empty Payload")
 	} else {

@@ -98,6 +98,24 @@ func TestCreateUserWithCorrectPayload(t *testing.T) {
 	}
 }
 
+func TestCreateUserWithDuplicatePayload(t *testing.T) {
+	clearDb()
+
+	userJson := `{"username":"avd", "email":"avd@gojek.com"}`
+	insertUser(userJson)
+	response, _ := insertUser(userJson)
+
+	if response.Code != http.StatusConflict {
+		t.Errorf("Expected Response code %d. Got %d\n", http.StatusConflict, response.Code)
+	}
+
+	responseBody, _ := ioutil.ReadAll(response.Body)
+
+	if string(responseBody) != "Duplicate Username" {
+		t.Errorf("Expected Duplicate Username Got %s", responseBody)
+	}
+}
+
 func TestGetAllUsersForNonEmptyDatabase(t *testing.T) {
 	clearDb()
 

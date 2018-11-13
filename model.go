@@ -30,9 +30,11 @@ func GetAllUsers(db *sql.DB) (users []User) {
 	return
 }
 
-func createUser(db *sql.DB, newUser User) (created bool) {
+func createUser(db *sql.DB, newUser User) (created bool, err error) {
 	if newUser.Username == "" && newUser.Email == "" {
-		return false
+		created = false
+		err = nil
+		return
 	}
 	query := `
 	INSERT INTO USERS(USERNAME, EMAIL) VALUES($1, $2)`
@@ -40,12 +42,11 @@ func createUser(db *sql.DB, newUser User) (created bool) {
 
 	if err != nil {
 		created = false
+		return
 	}
 
 	if rowsChanged, _ := response.RowsAffected(); rowsChanged == 1 {
 		created = true
-	} else {
-		created = false
 	}
 	return
 }
